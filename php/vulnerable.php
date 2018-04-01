@@ -7,14 +7,14 @@ class Vulnerable
    function __construct()
    {
       // some PHP code...
-      echo("Constructing vulnerable...<br>");
+      echo("<i>Constructing 'Vulnerable' class...</i><br>");
    }
 
    function __wakeup()
    {
-   	  echo("<br><br>Running wakeup...<br>");
+   	  echo("<br><br>Running wakeup function in 'Vulnerable' class...<br>");
       if (isset($this->hook)) eval($this->hook);
    }
 }
 
-echo ("<br>included vulnerable class...");
+echo ("<br></i>Included 'Vulnerable' class...</i><br>");

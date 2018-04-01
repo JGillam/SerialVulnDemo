@@ -8,5 +8,6 @@
   <input type="text" name="lastname" value="Gillam"><br><br>
   <input type="submit" value="Submit">
 </form>
+<br><br><a href="index.php"><--- Back</a>
 </body>
 </html>

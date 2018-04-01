@@ -21,8 +21,8 @@
   <input type="text" name="property" value="hook"><br>
   <input type="submit" value="Submit">
 </form>
-
-
 <?php }; ?>
+
+<br><a href="index.php"><--- Back</a>
 </body>
 </html>
