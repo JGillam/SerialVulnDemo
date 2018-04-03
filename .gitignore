@@ -1,1 +1,6 @@
 .vagrant/
+java/classes/
+java/out/
+java/webapp/classes/
+java/.idea/
+java/*.iml
