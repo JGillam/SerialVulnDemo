@@ -1,7 +1,7 @@
 <html>
 <head></head>
 <body>
-	Generating ticket...<br><br>
+Generating ticket...<br><br>
 <?php
 $ticketdata = array("first" => $_POST["firstname"], "last" => $_POST["lastname"]);
 $serialized = serialize($ticketdata);

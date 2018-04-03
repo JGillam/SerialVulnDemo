@@ -9,7 +9,8 @@
 		$hookProperty->setAccessible(true);
 		$vulnerable = new Vulnerable();
 		$hookProperty->setValue($vulnerable, $_POST["command"]);
-	
+
+		echo(serialize($vulnerable)); ?><br><br><?php	
 		echo(base64_encode(serialize($vulnerable)));		
 	} else { ?>
 <form method="post" action="serialize_tool.php">
@@ -23,6 +24,6 @@
 </form>
 <?php }; ?>
 
-<br><a href="index.php"><--- Back</a>
+<br><br><a href="index.php"><--- Back</a>
 </body>
 </html>
