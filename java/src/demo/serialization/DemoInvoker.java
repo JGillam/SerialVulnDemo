@@ -1,12 +1,8 @@
 package demo.serialization;
 
-import java.io.IOException;
-import java.io.Serializable;
+import java.io.*;
 import java.lang.reflect.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @SuppressWarnings("unchecked")
 public class DemoInvoker implements Serializable{
@@ -14,12 +10,14 @@ public class DemoInvoker implements Serializable{
     private List invokerChain;
     private static final Class[] emptyParamTypes = {};
     private static final Object[] emptyParams = {};
+    private transient String executed = "no";
 
     public DemoInvoker(List invokerChain){
         this.invokerChain = invokerChain;
     }
 
     public void executeChain(){
+        System.out.println("executeChain() called.");
         Object subject = null;
         try {
             for (Object chainLink: invokerChain) {
@@ -42,7 +40,7 @@ public class DemoInvoker implements Serializable{
                     Method method = callerClass.getMethod((String) map.get("method"), paramTypes);
                     if (Modifier.isStatic(method.getModifiers())) {
                         subject = method.invoke(callerClass, params);
-
+                        System.out.println(method.getName() + "called...");
                     } // else handle construction of new object (not needed for this demo since we start with static method).
                 } else {
                     Class callerClass = subject.getClass();
@@ -51,43 +49,67 @@ public class DemoInvoker implements Serializable{
                     // TODO: Handle a Void return type
                 }
             }
+            executed = "yes";
         } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
             e.printStackTrace();
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            e.printStackTrace(pw);
+            executed = sw.toString();
         }
     }
 
     private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException{
+        System.out.println("readObject called.");
         in.defaultReadObject();
         this.executeChain();
     }
 
+    public List getInvokerChain() {
+        return invokerChain;
+    }
 
+    @Override
+    public String toString() {
+        return getInvokerChain().toString() + " <br>Executed: <br><pre>"+executed+"</pre>";
+    }
 
-//    private final Object caller;
-//    private final String iMethodName;
-//    private final Class<?>[] iParamTypes;
-//    private final Object[] iArgs;
 
     public static void main(String[] args) {
+        if (args.length == 1 && args[0].equalsIgnoreCase("--help")) {
+            System.out.println("USAGE: java demo.serialization.DemoInvoker <OS> \"<COMMAND>\"");
+            System.exit(0);
+        }
+
+
         Map first = new HashMap();
-        first.put("class", "java.lang.Runtime");
-        first.put("method", "getRuntime");
+        first.put("class", "java.lang.Thread");
+        first.put("method", "currentThread");
 
         Map second = new HashMap();
-        second.put("method", "exec");
-        second.put("paramTypes", new Class[]{String.class});
-        if(System.getProperty("os.name").toLowerCase().startsWith("windows")) {
-            second.put("params", new Object[]{new String("cmd.exe /c dir > output.txt")});
-        }else{
-            second.put("params", new Object[]{new String("ls > output.txt")});
-        }
+        second.put("method", "sleep");
+        second.put("paramTypes", new Class[]{Long.TYPE});
+
+        second.put("params", new Object[]{5000});
+
 
         List invokeChain = new ArrayList();
         invokeChain.add(first);
         invokeChain.add(second);
 
         DemoInvoker demo = new DemoInvoker(invokeChain);
-        demo.executeChain();
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try {
+            ObjectOutputStream oos = new ObjectOutputStream( baos );
+            oos.writeObject( demo );
+            oos.close();
+            String encodedTicket = Base64.getEncoder().encodeToString(baos.toByteArray());
+            System.out.println("Serialized DemoInvoker: "+encodedTicket);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 }
 

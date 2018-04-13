@@ -17,7 +17,5 @@ Based 64 Encoded Ticket:
 echo (base64_encode($serialized));
 
 ?>
-
-
 </body>
 </html>

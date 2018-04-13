@@ -2,7 +2,7 @@
 <%@ page import="java.io.*" %>
 
 <html><head></head><body>
-Welcome to the Java Deserialization demo!
+Welcome to the Java (JSP) Deserialization demo!
 <br>
 <br>Looking for the "serialdemo" cookie...
 <%
@@ -14,18 +14,18 @@ Welcome to the Java Deserialization demo!
             if ("serialdemo".equals(cookies[i].getName())) {
               %><br><br>Cookie found!<%
               foundSerialDemoCookie = true;
-              String encodedTicket = cookies[1].getValue();
+              String encodedTicket = cookies[i].getValue();
               byte[] data = Base64.getDecoder().decode(encodedTicket);
               ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(data));
               Object o  = ois.readObject();
               ois.close();
               out.print("<br>Object: "+o);
               out.print("<br>Class: "+o.getClass().getName());
-              // Map ticket = (Map)o;
+              Map ticket = (Map)o;
               %><br>
-              <br>Timestamp: <%--=ticket.get("timestamp")--%>
-              <br>Username: <%--=ticket.get("username")--%>
-              <br>Role: <%--=ticket.get("role")--%>
+              <br>Timestamp: <%=ticket.get("timestamp")%>
+              <br>Username: <%=ticket.get("username")%>
+              <br>Role: <%=ticket.get("role")%>
               <%
             }
          }
